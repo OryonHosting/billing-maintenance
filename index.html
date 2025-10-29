@@ -3,11 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>OryonHosting — Maintenance Mode</title>
+  <title>Oryon Billing — Maintenance Mode</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Unconditional redirect every 60 seconds (works even if JS is disabled) -->
+  <meta http-equiv="refresh" content="60;url=https://billing.oryonhosting.com/">
   
   <style>
     :root{
@@ -90,9 +93,10 @@
     }
     .btn-secondary:hover{ background:rgba(255,255,255,.1); transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,.3) }
 
-    /* Maintenance badge */
+    /* Maintenance & auto-redirect badges */
     .status-indicator{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:8px; animation:pulse 2s infinite; }
     .status-maintenance{ background:#f59e0b; }
+    .status-ready{ background:#10b981; }
     @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.5} }
 
     .floating-particles{ position:fixed; inset:0; pointer-events:none; z-index:0; }
@@ -126,32 +130,43 @@
           </div>
         </div>
 
-        <!-- Static maintenance notice -->
-        <div class="mb-6 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20">
+        <!-- Maintenance notice -->
+        <div class="mb-3 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20">
           <div class="flex items-center justify-between mb-1">
             <div class="flex items-center">
               <span class="status-indicator status-maintenance"></span>
               <span class="text-sm font-medium text-amber-200">Maintenance Notice</span>
             </div>
-            <a href="https://status.oryonhosting.com" target="_blank" class="text-xs text-slate-400 hover:text-white transition-colors">View details →</a>
+            <a href="https://status.oryonhosting.com" target="_blank" rel="noopener noreferrer" class="text-xs text-slate-400 hover:text-white transition-colors">View details →</a>
           </div>
           <p class="text-xs text-slate-400">Scheduled maintenance in progress.</p>
+        </div>
+
+        <!-- Auto-redirect badge (updated text, no countdown) -->
+        <div class="mb-6 p-3 rounded-xl bg-emerald-500/10 border border-emerald-400/20 flex items-center gap-2">
+          <span class="status-indicator status-ready"></span>
+          <p class="text-sm text-emerald-200">
+            You will be automatically redirected as soon as maintenance is over.
+          </p>
         </div>
         
         <p class="text-slate-300 leading-relaxed mb-6">
           We're currently performing scheduled maintenance to enhance your experience.
-          Our systems will be back online shortly with improved performance and new features.
+          This page will regularly try to open the billing portal.
         </p>
 
         <!-- Action Buttons -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <a href="https://status.oryonhosting.com" target="_blank" class="btn-primary px-6 py-3 rounded-xl text-sm font-semibold text-white text-center hover:scale-[1.02] transition-transform">
+          <a href="https://status.oryonhosting.com" target="_blank" rel="noopener noreferrer" class="btn-primary px-6 py-3 rounded-xl text-sm font-semibold text-white text-center hover:scale-[1.02] transition-transform">
             Status Page
           </a>
-          <a href="http://discord.com/invite/g2XdcJX3XZ" target="_blank" class="btn-secondary px-6 py-3 rounded-xl text-sm font-semibold text-white text-center hover:scale-[1.02] transition-transform">
+          <a href="https://discord.com/invite/g2XdcJX3XZ" target="_blank" rel="noopener noreferrer" class="btn-secondary px-6 py-3 rounded-xl text-sm font-semibold text-white text-center hover:scale-[1.02] transition-transform">
             Discord Support
           </a>
         </div>
+
+        <!-- Screen-reader live region -->
+        <div id="sr-status" class="sr-only" aria-live="polite"></div>
       </div>
     </header>
 
@@ -188,8 +203,6 @@
               <div class="bar" id="progress-bar"></div>
             </div>
           </div>
-
-          <!-- Removed the "Need immediate assistance?" block as requested -->
 
           <div class="mt-4 pt-3 border-t border-slate-700/30">
             <span class="text-green-400">root@oryonhosting</span>
@@ -259,6 +272,17 @@
         p.style.background = colors[Math.floor(Math.random() * colors.length)];
         particlesContainer.appendChild(p);
       }
+    })();
+
+    (function(){
+      const TARGET = 'https://billing.oryonhosting.com/';
+      const PERIOD_MS = 60000; // 1 minute
+      const sr = document.getElementById('sr-status');
+
+      setInterval(() => {
+        if (sr) sr.textContent = 'Redirecting to billing portal…';
+        window.location.replace(TARGET);
+      }, PERIOD_MS);
     })();
   </script>
 </body>
